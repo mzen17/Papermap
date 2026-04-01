@@ -72,38 +72,10 @@ metadata:
   name: papermap
   namespace: papermap
 spec:
+  type: NodePort
   selector:
     app: papermap
   ports:
-    - port: 80
+    - port: 8000
       targetPort: 8000
-
----
-# k3s ships Traefik as the ingress controller
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: papermap
-  namespace: papermap
-  annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
-    # uncomment to enable TLS via cert-manager / Let's Encrypt:
-    # traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    # cert-manager.io/cluster-issuer: letsencrypt-prod
-spec:
-  rules:
-    - host: papermap.example.com  # replace with your domain
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: papermap
-                port:
-                  number: 80
-  # uncomment for TLS:
-  # tls:
-  #   - hosts:
-  #       - papermap.example.com
-  #     secretName: papermap-tls
+      nodePort: 9012

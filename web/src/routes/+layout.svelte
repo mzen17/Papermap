@@ -30,7 +30,7 @@
 	}
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
+<svelte:head>PaperMap</svelte:head>
 
 {#if $page.url.pathname.startsWith('/login')}
 	{@render children()}

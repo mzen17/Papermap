@@ -222,6 +222,13 @@ class RelationshipUpdate(SQLModel):
     description: Optional[str] = None
 
 
+# ─── Health ───────────────────────────────────────────────────────────────────
+
+@app.get("/healthz")
+def healthz():
+    return {"ok": True}
+
+
 # ─── Startup ──────────────────────────────────────────────────────────────────
 
 @app.on_event("startup")

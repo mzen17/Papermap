@@ -1,27 +1,19 @@
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: papermap
-
----
-apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: papermap-db
-  namespace: papermap
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 2Gi
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: papermap
-  namespace: papermap
   labels:
     app: papermap
 spec:
@@ -36,7 +28,7 @@ spec:
     spec:
       containers:
         - name: papermap
-          image: your-registry/papermap:latest  # replace with your image
+          image: ghcr.io/mzen17/papermap:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
@@ -48,15 +40,13 @@ spec:
               mountPath: /db
           readinessProbe:
             httpGet:
-              path: /me
+              path: /healthz
               port: 8000
             initialDelaySeconds: 5
             periodSeconds: 10
-            # /me returns 401 (not 2xx) when unauthenticated, so check for that
-            # alternatively swap for a /healthz if you add one
           livenessProbe:
             httpGet:
-              path: /me
+              path: /healthz
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 30
@@ -70,12 +60,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: papermap
-  namespace: papermap
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: papermap
   ports:
-    - port: 8000
+    - protocol: TCP
+      port: 9012
       targetPort: 8000
-      nodePort: 9012
